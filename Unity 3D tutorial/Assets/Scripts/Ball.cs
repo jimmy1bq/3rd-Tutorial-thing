@@ -38,7 +38,7 @@ public class Ball : MonoBehaviour
         }
         else
         {
-            GetComponent<Renderer>().material.color = Color.blue;
+        GetComponent<Renderer>().material.color = Color.blue;
         }
     }
 
