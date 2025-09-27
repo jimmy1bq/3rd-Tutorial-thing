@@ -1,11 +1,32 @@
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    [SerializeField] TextMeshProUGUI player1BallsText;
+    [SerializeField] TextMeshProUGUI player2BallsText;
+    [SerializeField] TextMeshProUGUI currentPlayerTurnText;
+    [SerializeField] TextMeshProUGUI messageText;
+
+    [SerializeField] GameObject restartButton;
+
+    [SerializeField] Transform headPosition;
+    enum currentPlayer { 
+    Player1,
+    Player2
+    }
+
+    currentPlayer player;
+    bool isWinningShotPlayer1=false;
+    bool isWinningShotPlayer2=false;
+    int player1ballsremaining= 7;
+    int player2ballsremaining = 7;
     void Start()
     {
-        
+        player = currentPlayer.Player1;
     }
 
     // Update is called once per frame
@@ -13,4 +34,142 @@ public class GameManager : MonoBehaviour
     {
         
     }
+
+    public void RestartTheGame() {
+        SceneManager.LoadScene(0);
+    
+    }
+    bool scratch() {
+
+        if (player == currentPlayer.Player1) {
+            if (isWinningShotPlayer1)
+            {
+                scratchonwinningshot("Player 1");
+                return true;
+            }
+            else {
+                if (isWinningShotPlayer2) { 
+                }
+                scratchonwinningshot("Player 2");
+                return true;
+            }
+        }
+        nextPlayerTurn();
+        return false;
+    
+    }
+    void Early8Ball() {
+        if (player==currentPlayer.Player1) {
+            lose("Player 1 has hit the 8 ball too early in - skill issue");
+        }
+        else lose("Player 2 has hit the 8 ball too early in - skill issue");
+    }
+    void scratchonwinningshot(string playername) {
+        lose(playername + "Scratched THEIR WINNING SHOT AND HAS LOST");
+    }
+    void nomoreball(currentPlayer playernam) {
+        if (playernam == currentPlayer.Player1) {
+            isWinningShotPlayer1 = true;
+        }
+        else isWinningShotPlayer2 = true;
+    }
+    bool CheckBall(Ball ball) {
+        if (ball.isCueBall())
+        {
+            if (scratch())
+            {
+                return true;
+            }
+            else {return false;}
+
+
+        }
+        else if (ball.is8Ball())
+        {
+            if (isWinningShotPlayer1)
+            {
+
+                win("Player 1 ");
+                return true;
+            }
+            else if(isWinningShotPlayer2) {
+                win("Player 1 ");
+                return true;
+            }
+            Early8Ball();
+        
+        }
+        else {
+            if (ball.isBallRed())
+            {
+                player1ballsremaining--;
+                player1BallsText.text = "Player 1 Balls Remaining: " + player1ballsremaining;
+                if (player1ballsremaining <= 0)
+                {
+                    isWinningShotPlayer1 = true;
+                }
+                if (player != currentPlayer.Player1)
+                {
+                    nextPlayerTurn();
+                }
+
+            }
+            else{
+                player2ballsremaining--;
+                player2BallsText.text = "Player 2 Balls Remaining: " + player2ballsremaining;
+                if (player2ballsremaining <= 0)
+                {
+                    isWinningShotPlayer2 = true;
+                }
+                if (player != currentPlayer.Player2)
+                {
+                    nextPlayerTurn();
+                }
+            }
+        
+        
+        
+  }
+           return true;
+    }
+    void lose(string message) { 
+        messageText.GameObject().SetActive(true);
+        messageText.text = message;
+        restartButton.SetActive(true);
+    }
+    void win(string player)
+    {
+        messageText.GameObject().SetActive(true);
+        messageText.text = player + "HAS WON!!!!!!!!??!??!?!!";
+        restartButton.SetActive(true);
+    }
+    void nextPlayerTurn() {
+        if (player == currentPlayer.Player1)
+        {
+            player = currentPlayer.Player2;
+            currentPlayerTurnText.text = "Player 2's Turn";
+        }
+        else {
+
+            player = currentPlayer.Player1;
+            currentPlayerTurnText.text = "Player 1's Turn";
+        
+    }
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "Ball") {
+            if (CheckBall(other.gameObject.GetComponent<Ball>()))
+            {
+               Destroy(other.gameObject);
+            }
+            else { 
+            other.gameObject.transform.position = headPosition.position;
+            other.gameObject.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+            other.gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+
+          }
+      }
+    }
+
 }
