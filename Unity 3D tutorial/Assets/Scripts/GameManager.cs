@@ -31,12 +31,15 @@ public class GameManager : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        
+    {//just here because the restart button is not working
+       // if (restartButton.active==true) {
+      //      RestartTheGame();
+       // }
     }
 
     public void RestartTheGame() {
-        SceneManager.LoadScene(0);
+        Debug.Log("Restarting the game");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     
     }
     bool scratch() {
@@ -44,14 +47,16 @@ public class GameManager : MonoBehaviour
         if (player == currentPlayer.Player1) {
             if (isWinningShotPlayer1)
             {
+          
                 scratchonwinningshot("Player 1");
                 return true;
             }
             else {
-                if (isWinningShotPlayer2) { 
+                if (isWinningShotPlayer2) {
+                    scratchonwinningshot("Player 2");
+                    return true;
                 }
-                scratchonwinningshot("Player 2");
-                return true;
+               
             }
         }
         nextPlayerTurn();
@@ -65,7 +70,7 @@ public class GameManager : MonoBehaviour
         else lose("Player 2 has hit the 8 ball too early in - skill issue");
     }
     void scratchonwinningshot(string playername) {
-        lose(playername + "Scratched THEIR WINNING SHOT AND HAS LOST");
+        lose(playername +" " + "Scratched THEIR WINNING SHOT AND HAS LOST");
     }
     void nomoreball(currentPlayer playernam) {
         if (playernam == currentPlayer.Player1) {
@@ -76,6 +81,7 @@ public class GameManager : MonoBehaviour
     bool CheckBall(Ball ball) {
         if (ball.isCueBall())
         {
+           
             if (scratch())
             {
                 return true;
