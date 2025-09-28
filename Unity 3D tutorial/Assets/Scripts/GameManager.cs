@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI player2BallsText;
     [SerializeField] TextMeshProUGUI currentPlayerTurnText;
     [SerializeField] TextMeshProUGUI messageText;
+    [SerializeField] float movementThereshold;
 
     [SerializeField] GameObject restartButton;
 
@@ -17,7 +18,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] Camera cueStickCamera;
     [SerializeField] Camera overheadCamera;
-
+    [SerializeField] float shotTimer = 3f;
+    private float currentShotTimer;
     Camera currentCamera;
 
     enum currentPlayer { 
@@ -31,8 +33,11 @@ public class GameManager : MonoBehaviour
     bool iswaitingforballstostop = false;
     bool isGameOver = false;
     bool willSawpPLayer= false;
+    bool ballPocketed = false;
     int player1ballsremaining= 7;
     int player2ballsremaining = 7;
+    //for some reason unity counts the first  3 frame of my cueballs veloctiy as 2.5e-6 and would automatically switch over to the next player so Im placing this here to stop it
+    int ignoreIntialFrameCount = 3;
     void Start()
     {
         player = currentPlayer.Player1;
@@ -42,26 +47,49 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {//just here because the restart button is not working
-     // if (restartButton.active==true) {
-     //      RestartTheGame();
-     // }
-        if (iswaitingforballstostop && !isGameOver) { 
+        
+
+        if (iswaitingforballstostop && !isGameOver)
+        {
+            currentShotTimer -= Time.deltaTime;
+            if (currentShotTimer>0) {
+                return;
+            }
             bool allballsarestopped = true;
-            foreach (GameObject ball in GameObject.FindGameObjectsWithTag("Ball")) {
-                if (ball.GetComponent<Rigidbody>().velocity.magnitude > 0f) {
+            //does switch camera but takes a decent amount of time as if I try to do 5e-5 it just switch camera right away after the cue ball gets hit
+            foreach (GameObject ball in GameObject.FindGameObjectsWithTag("Ball"))
+            {
+                //if (ball.GetComponent<Ball>().isCueBall())
+                //{
+                //     Debug.Log(ball.GetComponent<Rigidbody>().linearVelocity.magnitude);
+                // }
+
+                if (ignoreIntialFrameCount>0||ball.GetComponent<Rigidbody>().linearVelocity.magnitude >= movementThereshold)
+                {
+                   
+                    ignoreIntialFrameCount --;
                     allballsarestopped = false;
                     break;
                 }
-            }if (allballsarestopped) {
+            }
+            Debug.Log(allballsarestopped);
+            if (allballsarestopped)
+            {
+               
                 iswaitingforballstostop = false;
-                if (willSawpPLayer) {
+                if (willSawpPLayer || !ballPocketed)
+                {
                     nextPlayerTurn();
                 }
-                else {
+                else
+                {
                     switchCamera();
                 }
 
+            currentShotTimer = shotTimer;
+                ballPocketed = false; 
             }
+        }
     }
     public void switchCamera() {
         if (currentCamera == cueStickCamera)
@@ -80,8 +108,8 @@ public class GameManager : MonoBehaviour
     
     }
     public void RestartTheGame() {
-     
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+     Debug.Log("Restarting");
+        SceneManager.LoadScene(0);
     
     }
     bool scratch() {
@@ -102,7 +130,7 @@ public class GameManager : MonoBehaviour
         }
        
         //nextPlayerTurn();
-        
+        willSawpPLayer = true;
         return false;
     
     }
@@ -209,9 +237,9 @@ public class GameManager : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(other);
+        
         if (other.tag == "Ball") {
-            Debug.Log(CheckBall(other.gameObject.GetComponent<Ball>()));
+                ballPocketed = true;
             if (CheckBall(other.gameObject.GetComponent<Ball>()))
             {
                 Destroy(other.gameObject);
