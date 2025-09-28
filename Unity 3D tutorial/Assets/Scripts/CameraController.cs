@@ -30,9 +30,7 @@ public class CameraController : MonoBehaviour
             horizontalInput = Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
             transform.RotateAround(cueBall.position, Vector3.up, horizontalInput);
         }
-        if(Input.GetKeyDown(KeyCode.Space)) {
-            resetCamera();
-        }
+        
         if (Input.GetKeyDown(KeyCode.LeftShift)&& gameObject.GetComponent<Camera>().enabled ) { 
             
             Vector3 hitdirectoin = transform.forward;

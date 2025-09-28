@@ -28,6 +28,9 @@ public class GameManager : MonoBehaviour
     currentPlayer player;
     bool isWinningShotPlayer1=false;
     bool isWinningShotPlayer2=false;
+    bool iswaitingforballstostop = false;
+    bool isGameOver = false;
+    bool willSawpPLayer= false;
     int player1ballsremaining= 7;
     int player2ballsremaining = 7;
     void Start()
@@ -39,22 +42,40 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {//just here because the restart button is not working
-       // if (restartButton.active==true) {
-      //      RestartTheGame();
-       // }
+     // if (restartButton.active==true) {
+     //      RestartTheGame();
+     // }
+        if (iswaitingforballstostop && !isGameOver) { 
+            bool allballsarestopped = true;
+            foreach (GameObject ball in GameObject.FindGameObjectsWithTag("Ball")) {
+                if (ball.GetComponent<Rigidbody>().velocity.magnitude > 0f) {
+                    allballsarestopped = false;
+                    break;
+                }
+            }if (allballsarestopped) {
+                iswaitingforballstostop = false;
+                if (willSawpPLayer) {
+                    nextPlayerTurn();
+                }
+                else {
+                    switchCamera();
+                }
+
+            }
     }
     public void switchCamera() {
         if (currentCamera == cueStickCamera)
         {
             overheadCamera.enabled = true;
             cueStickCamera.enabled = false;
- 
             currentCamera = overheadCamera;
+            iswaitingforballstostop = true;
         }
         else {
             overheadCamera.enabled = false;
             cueStickCamera.enabled = true;
             currentCamera = cueStickCamera;
+            currentCamera.GetComponent<CameraController>().resetCamera();
         }
     
     }
@@ -80,7 +101,8 @@ public class GameManager : MonoBehaviour
             }
         }
        
-        nextPlayerTurn();
+        //nextPlayerTurn();
+        
         return false;
     
     }
@@ -93,12 +115,9 @@ public class GameManager : MonoBehaviour
     void scratchonwinningshot(string playername) {
         lose(playername +" " + "Scratched THEIR WINNING SHOT AND HAS LOST");
     }
-    void nomoreball(currentPlayer playernam) {
-        if (playernam == currentPlayer.Player1) {
-            isWinningShotPlayer1 = true;
-        }
-        else isWinningShotPlayer2 = true;
-    }
+    
+
+
     bool CheckBall(Ball ball) {
         if (ball.isCueBall())
         {
@@ -133,12 +152,13 @@ public class GameManager : MonoBehaviour
                 player1ballsremaining--;
                 player1BallsText.text = "Player 1 Balls Remaining: " + player1ballsremaining;
                 if (player1ballsremaining <= 0)
-                {
+                {   
                     isWinningShotPlayer1 = true;
                 }
                 if (player != currentPlayer.Player1)
-                {
-                    nextPlayerTurn();
+                {  // iswaitingforballstostop = true;
+                   willSawpPLayer = true;
+                    // nextPlayerTurn();
                 }
 
             }
@@ -150,8 +170,9 @@ public class GameManager : MonoBehaviour
                     isWinningShotPlayer2 = true;
                 }
                 if (player != currentPlayer.Player2)
-                {
-                    nextPlayerTurn();
+                {   willSawpPLayer = true;
+                    //iswaitingforballstostop = true;
+                    //nextPlayerTurn();
                 }
             }
         
@@ -161,12 +182,13 @@ public class GameManager : MonoBehaviour
            return true;
     }
     void lose(string message) { 
+        isGameOver = true;
         messageText.GameObject().SetActive(true);
         messageText.text = message;
         restartButton.SetActive(true);
     }
     void win(string player)
-    {
+    {   isGameOver = true;
         messageText.GameObject().SetActive(true);
         messageText.text = player + "HAS WON!!!!!!!!??!??!?!!";
         restartButton.SetActive(true);
@@ -182,7 +204,8 @@ public class GameManager : MonoBehaviour
             player = currentPlayer.Player1;
             currentPlayerTurnText.text = "Player 1's Turn";
         
-    }
+    }   willSawpPLayer = false;
+        switchCamera();
     }
     private void OnTriggerEnter(Collider other)
     {
