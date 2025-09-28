@@ -13,13 +13,18 @@ public class GameSetup : MonoBehaviour
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
-        Debug.Log("Placing nuts");
+
+   
         ballRadius = BallPrefab.GetComponent<SphereCollider>().radius;
         ballDiameter = ballRadius * 2f;
-        Debug.Log("Placing nuts");
+       
         placeAllBalls();
+    }
+    void Start()
+    {
+      
     }
 
     // Update is called once per frame
@@ -45,7 +50,7 @@ public class GameSetup : MonoBehaviour
     }
     //place every ball that isn't the cue ball or 8 ball
     void placeRandomBalls()
-    { Debug.Log("Placing Random Balls");
+    { 
         int NumInThisRow = 1;
         int rand;
         Vector3 FirstInRowPosition = HeadBallPosition.position;

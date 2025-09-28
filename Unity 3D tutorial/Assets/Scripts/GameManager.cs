@@ -14,6 +14,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject restartButton;
 
     [SerializeField] Transform headPosition;
+
+    [SerializeField] Camera cueStickCamera;
+    [SerializeField] Camera overheadCamera;
+
+    Camera currentCamera;
+
     enum currentPlayer { 
     Player1,
     Player2
@@ -27,6 +33,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         player = currentPlayer.Player1;
+        currentCamera = cueStickCamera;
     }
 
     // Update is called once per frame
@@ -36,9 +43,23 @@ public class GameManager : MonoBehaviour
       //      RestartTheGame();
        // }
     }
-
+    public void switchCamera() {
+        if (currentCamera == cueStickCamera)
+        {
+            overheadCamera.enabled = true;
+            cueStickCamera.enabled = false;
+ 
+            currentCamera = overheadCamera;
+        }
+        else {
+            overheadCamera.enabled = false;
+            cueStickCamera.enabled = true;
+            currentCamera = cueStickCamera;
+        }
+    
+    }
     public void RestartTheGame() {
-        Debug.Log("Restarting the game");
+     
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     
     }
@@ -47,7 +68,6 @@ public class GameManager : MonoBehaviour
         if (player == currentPlayer.Player1) {
             if (isWinningShotPlayer1)
             {
-          
                 scratchonwinningshot("Player 1");
                 return true;
             }
@@ -59,6 +79,7 @@ public class GameManager : MonoBehaviour
                
             }
         }
+       
         nextPlayerTurn();
         return false;
     
@@ -81,11 +102,12 @@ public class GameManager : MonoBehaviour
     bool CheckBall(Ball ball) {
         if (ball.isCueBall())
         {
-           
+ 
             if (scratch())
             {
                 return true;
             }
+
             else {return false;}
 
 
@@ -164,10 +186,12 @@ public class GameManager : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other);
         if (other.tag == "Ball") {
+            Debug.Log(CheckBall(other.gameObject.GetComponent<Ball>()));
             if (CheckBall(other.gameObject.GetComponent<Ball>()))
             {
-               Destroy(other.gameObject);
+                Destroy(other.gameObject);
             }
             else { 
             other.gameObject.transform.position = headPosition.position;

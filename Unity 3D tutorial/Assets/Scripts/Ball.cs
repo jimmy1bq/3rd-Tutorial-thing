@@ -4,17 +4,24 @@ public class Ball : MonoBehaviour
 {   private bool isred;
     private bool iscueball = false;
     private bool is8ball = false;
+    Rigidbody rb;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        rb= GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+    private void FixedUpdate()
+    {
+        Vector3 newVelocity = rb.linearVelocity;
+        newVelocity.y = 0f;
+        rb.linearVelocity = newVelocity;
     }
     public bool isBallRed() {
         return isred;
