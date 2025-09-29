@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] Camera overheadCamera;
     [SerializeField] float shotTimer = 3f;
     private float currentShotTimer;
+   
     Camera currentCamera;
 
     enum currentPlayer {
@@ -43,7 +44,7 @@ public class GameManager : MonoBehaviour
         player = currentPlayer.Player1;
         currentCamera = cueStickCamera;
     }
-    
+
     // Update is called once per frame
     void Update()
     {//just here because the restart button is not working
@@ -52,7 +53,8 @@ public class GameManager : MonoBehaviour
         if (iswaitingforballstostop && !isGameOver)
         {
             currentShotTimer -= Time.deltaTime;
-            if (currentShotTimer > 0) {
+            if (currentShotTimer > 0)
+            {
                 return;
             }
             bool allballsarestopped = true;
@@ -72,25 +74,53 @@ public class GameManager : MonoBehaviour
                     break;
                 }
             }
-           
+            //red ball is player 1s and blue ball is player 2s
             if (allballsarestopped)
-            {
-
-                iswaitingforballstostop = false;
-                if (willSawpPLayer || !ballPocketed)
                 {
-                    nextPlayerTurn();
-                }
-                else
-                {
-                    switchCamera();
-                }
+                    foreach (GameObject ball in GameObject.FindGameObjectsWithTag("Ball"))
+                    {
+                        if (ball.GetComponent<Ball>().isCueBall())
+                        {
+                            if (player == currentPlayer.Player1 && ball.GetComponent<Ball>().hitBlueBall)
+                            {   
+                                ball.GetComponent<Ball>().hitBlueBall = false;
+                                ball.GetComponent<Transform>().position = headPosition.position;
+                               willSawpPLayer = true;
+                                
 
-                currentShotTimer = shotTimer;
-                ballPocketed = false;
+                           
+                            break;
+
+                            }
+                            else if (player == currentPlayer.Player2 && ball.GetComponent<Ball>().hitRedBall)
+                            {
+                                ball.GetComponent<Ball>().hitRedBall = false;
+                                ball.GetComponent<Transform>().position = headPosition.position;
+                            willSawpPLayer = true;
+
+                            break;
+                        }
+
+                        }
+                    }
+
+                    iswaitingforballstostop = false;
+
+                    if (willSawpPLayer || !ballPocketed)
+                    {
+                        nextPlayerTurn();
+                    }
+                    else
+                    {
+                        switchCamera();
+                    }
+
+                    currentShotTimer = shotTimer;
+                    ballPocketed = false;
+                }
             }
         }
-    }
+    
     public void switchCamera() {
         if (currentCamera == cueStickCamera)
         {
