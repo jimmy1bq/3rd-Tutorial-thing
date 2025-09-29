@@ -11,9 +11,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI currentPlayerTurnText;
     [SerializeField] TextMeshProUGUI messageText;
     [SerializeField] float movementThereshold;
+   
 
     [SerializeField] GameObject restartButton;
-
     [SerializeField] Transform headPosition;
 
     [SerializeField] Camera cueStickCamera;
@@ -22,19 +22,19 @@ public class GameManager : MonoBehaviour
     private float currentShotTimer;
     Camera currentCamera;
 
-    enum currentPlayer { 
-    Player1,
-    Player2
+    enum currentPlayer {
+        Player1,
+        Player2
     }
 
     currentPlayer player;
-    bool isWinningShotPlayer1=false;
-    bool isWinningShotPlayer2=false;
+    bool isWinningShotPlayer1 = false;
+    bool isWinningShotPlayer2 = false;
     bool iswaitingforballstostop = false;
     bool isGameOver = false;
-    bool willSawpPLayer= false;
+    bool willSawpPLayer = false;
     bool ballPocketed = false;
-    int player1ballsremaining= 7;
+    int player1ballsremaining = 7;
     int player2ballsremaining = 7;
     //for some reason unity counts the first  3 frame of my cueballs veloctiy as 2.5e-6 and would automatically switch over to the next player so Im placing this here to stop it
     int ignoreIntialFrameCount = 3;
@@ -43,16 +43,16 @@ public class GameManager : MonoBehaviour
         player = currentPlayer.Player1;
         currentCamera = cueStickCamera;
     }
-
+    
     // Update is called once per frame
     void Update()
     {//just here because the restart button is not working
-        
+
 
         if (iswaitingforballstostop && !isGameOver)
         {
             currentShotTimer -= Time.deltaTime;
-            if (currentShotTimer>0) {
+            if (currentShotTimer > 0) {
                 return;
             }
             bool allballsarestopped = true;
@@ -64,18 +64,18 @@ public class GameManager : MonoBehaviour
                 //     Debug.Log(ball.GetComponent<Rigidbody>().linearVelocity.magnitude);
                 // }
 
-                if (ignoreIntialFrameCount>0||ball.GetComponent<Rigidbody>().linearVelocity.magnitude >= movementThereshold)
+                if (ignoreIntialFrameCount > 0 || ball.GetComponent<Rigidbody>().linearVelocity.magnitude >= movementThereshold)
                 {
-                   
-                    ignoreIntialFrameCount --;
+
+                    ignoreIntialFrameCount--;
                     allballsarestopped = false;
                     break;
                 }
             }
-            Debug.Log(allballsarestopped);
+           
             if (allballsarestopped)
             {
-               
+
                 iswaitingforballstostop = false;
                 if (willSawpPLayer || !ballPocketed)
                 {
@@ -86,8 +86,8 @@ public class GameManager : MonoBehaviour
                     switchCamera();
                 }
 
-            currentShotTimer = shotTimer;
-                ballPocketed = false; 
+                currentShotTimer = shotTimer;
+                ballPocketed = false;
             }
         }
     }
@@ -105,12 +105,15 @@ public class GameManager : MonoBehaviour
             currentCamera = cueStickCamera;
             currentCamera.GetComponent<CameraController>().resetCamera();
         }
-    
+
     }
     public void RestartTheGame() {
-     Debug.Log("Restarting");
+        Debug.Log("Restarting");
         SceneManager.LoadScene(0);
-    
+
+    }
+    public void HoverTest() {
+        Debug.Log("HI");
     }
     bool scratch() {
 
