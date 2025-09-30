@@ -66,7 +66,7 @@ public class Ball : MonoBehaviour
         GetComponent<Renderer>().material.color = Color.black;
     }
     private void OnCollisionEnter(Collision collision)
-    {
+    {//check if the ball's script parent is cueball if it is then check if it had already made contact with a ball or not. If not then check if the ball is red or blue.
         if (isCueBall()) {
             if (collision.gameObject.tag == "Ball" && !firstContactWithBall) {
                 if (collision.gameObject.GetComponent<Ball>().isred) {

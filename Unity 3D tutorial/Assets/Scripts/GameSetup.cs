@@ -96,9 +96,9 @@ public class GameSetup : MonoBehaviour
 
                 {        PlaceBlueBall(currentPosition);
                 }
-                currentPosition += new Vector3(1, 0, 0).normalized * ballDiameter;
+                currentPosition += new Vector3(1, 0, 0).normalized * ballDiameter*3f;
             }
-           FirstInRowPosition += Vector3.back * (Mathf.Sqrt(3) * ballRadius) + Vector3.left * ballRadius;
+           FirstInRowPosition += Vector3.back * (Mathf.Sqrt(32) * ballRadius) + Vector3.left * ballRadius + new Vector3(-0.03f,0,0);
             currentPosition = FirstInRowPosition;
             NumInThisRow++;
         }

@@ -281,7 +281,6 @@ public class GameManager : MonoBehaviour
             other.gameObject.transform.position = headPosition.position;
             other.gameObject.GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
             other.gameObject.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
-
           }
       }
     }
